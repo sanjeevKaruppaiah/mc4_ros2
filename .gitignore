@@ -1,0 +1,11 @@
+build/
+install/
+log/
+__pycache__/
+*.pyc
+.vscode/
+src/third_party/
+*.pgm
+*.posegraph
+*.data
+!src/mc4_bringup/maps/.gitkeep

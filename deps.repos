@@ -1,0 +1,18 @@
+# Source-only dependencies. Import into the workspace with:
+#   vcs import src < src/mc4_ros2/deps.repos
+# RPLIDAR needs nothing here: sudo apt install ros-jazzy-rplidar-ros
+repositories:
+  # Lidar odometry: REQUIRED for the MC 4.0 build without wheel encoders.
+  third_party/rf2o_laser_odometry:
+    type: git
+    url: https://github.com/MAPIRlab/rf2o_laser_odometry.git
+    version: ros2
+  # Only if you use an LDROBOT LD19 / LD06 lidar:
+  third_party/ldlidar_stl_ros2:
+    type: git
+    url: https://github.com/ldrobotSensorTeam/ldlidar_stl_ros2.git
+  # YDLIDAR also needs the YDLidar-SDK installed system-wide first:
+  #   https://github.com/YDLIDAR/YDLidar-SDK
+  # third_party/ydlidar_ros2_driver:
+  #   type: git
+  #   url: https://github.com/YDLIDAR/ydlidar_ros2_driver.git

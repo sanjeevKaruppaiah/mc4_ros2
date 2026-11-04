@@ -1,0 +1,4 @@
+# This project runs on Linux (ROS 2); keep LF endings even in Windows checkouts.
+* text=auto eol=lf
+*.png binary
+*.pgm binary

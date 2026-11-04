@@ -1,0 +1,14 @@
+# MC 4.0 base driver parameters.
+# wheel_radius / wheel_separation / use_encoders / odom_topic / publish_tf are
+# set by robot.launch.py so the URDF, kinematics and odometry always agree.
+mc4_base_node:
+  ros__parameters:
+    baud: 115200
+    # Must stay <= firmware MAX_WHEEL_RAD_S (= LOADED_RPM * 2*pi / 60).
+    # 150 RPM -> 15.7 rad/s. Nav2 only asks for ~6.8 rad/s (0.22 m/s on 65 mm wheels).
+    max_wheel_speed: 15.0     # rad/s
+    ticks_per_rev: 1320.0     # only used with encoders (or as the virtual scale without them)
+    cmd_timeout: 0.5          # s without /cmd_vel -> stop
+    rate: 30.0                # Hz
+    odom_frame: odom
+    base_frame: base_footprint

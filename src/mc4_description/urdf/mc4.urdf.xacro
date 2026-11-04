@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!--
+  MC 4.0 base + 2D lidar.
+  Default: 4WD skid steer, 65 mm wheels, 250 mm track, 300 mm wheelbase, lidar at 180 mm.
+  four_wheel:=false gives the 2-wheel + caster variant.
+  All dimensions are xacro args, overridden from mc4_bringup/launch/robot.launch.py.
+-->
+<robot name="mc4" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ===== Tunable dimensions (metres / radians) ===== -->
+  <xacro:arg name="four_wheel"       default="true"/>
+  <xacro:arg name="wheel_radius"     default="0.0325"/>
+  <xacro:arg name="wheel_separation" default="0.250"/>
+  <xacro:arg name="wheelbase"        default="0.300"/>
+  <xacro:arg name="wheel_width"      default="0.026"/>
+  <xacro:arg name="chassis_length"   default="0.340"/>
+  <xacro:arg name="chassis_width"    default="0.200"/>
+  <xacro:arg name="chassis_height"   default="0.060"/>
+  <xacro:arg name="lidar_x"          default="0.0"/>
+  <xacro:arg name="lidar_z"          default="0.180"/>
+  <!-- Use lidar_yaw:=3.14159 if scans appear behind the robot in RViz -->
+  <xacro:arg name="lidar_yaw"        default="0.0"/>
+
+  <xacro:property name="wr"  value="$(arg wheel_radius)"/>
+  <xacro:property name="ws"  value="$(arg wheel_separation)"/>
+  <xacro:property name="wb"  value="$(arg wheelbase)"/>
+  <xacro:property name="ww"  value="$(arg wheel_width)"/>
+  <xacro:property name="cl"  value="$(arg chassis_length)"/>
+  <xacro:property name="cw"  value="$(arg chassis_width)"/>
+  <xacro:property name="ch"  value="$(arg chassis_height)"/>
+
+  <material name="mc4_blue"><color rgba="0.10 0.35 0.80 1.0"/></material>
+  <material name="black"><color rgba="0.05 0.05 0.05 1.0"/></material>
+  <material name="grey"><color rgba="0.60 0.60 0.60 1.0"/></material>
+
+  <!-- base_footprint: on the ground at the robot's rotation centre. Nav2/SLAM use this frame. -->
+  <link name="base_footprint"/>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${ch/2}"/>
+      <geometry><box size="${cl} ${cw} ${ch}"/></geometry>
+      <material name="mc4_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${ch/2}"/>
+      <geometry><box size="${cl} ${cw} ${ch}"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${ch/2}"/>
+      <mass value="1.5"/>
+      <inertia ixx="0.006" ixy="0" ixz="0" iyy="0.015" iyz="0" izz="0.019"/>
+    </inertial>
+  </link>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${wr}"/>
+  </joint>
+
+  <xacro:macro name="wheel" params="name x y">
+    <link name="${name}_link">
+      <visual>
+        <origin rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wr}" length="${ww}"/></geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wr}" length="${ww}"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="0.06"/>
+        <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00003" iyz="0" izz="0.00002"/>
+      </inertial>
+    </link>
+    <joint name="${name}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}_link"/>
+      <origin xyz="${x} ${y} 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- 4WD skid steer: wheels at +/- wheelbase/2, rotation centre in the middle -->
+  <xacro:if value="$(arg four_wheel)">
+    <xacro:wheel name="left_wheel"       x="${wb/2}"  y="${ws/2}"/>
+    <xacro:wheel name="right_wheel"      x="${wb/2}"  y="${-ws/2}"/>
+    <xacro:wheel name="rear_left_wheel"  x="${-wb/2}" y="${ws/2}"/>
+    <xacro:wheel name="rear_right_wheel" x="${-wb/2}" y="${-ws/2}"/>
+  </xacro:if>
+
+  <!-- 2 drive wheels + rear caster -->
+  <xacro:unless value="$(arg four_wheel)">
+    <xacro:wheel name="left_wheel"  x="0" y="${ws/2}"/>
+    <xacro:wheel name="right_wheel" x="0" y="${-ws/2}"/>
+    <link name="caster_link">
+      <visual>
+        <geometry><sphere radius="${wr/2}"/></geometry>
+        <material name="grey"/>
+      </visual>
+      <collision>
+        <geometry><sphere radius="${wr/2}"/></geometry>
+      </collision>
+    </link>
+    <joint name="caster_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="caster_link"/>
+      <origin xyz="${-cl/2 + wr/2} 0 ${-wr/2}"/>
+    </joint>
+  </xacro:unless>
+
+  <!-- 2D lidar. Frame name must match the lidar driver's frame_id (laser_frame). -->
+  <link name="laser_frame">
+    <visual>
+      <origin xyz="0 0 -0.015"/>
+      <geometry><cylinder radius="0.035" length="0.03"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.015"/>
+      <geometry><cylinder radius="0.035" length="0.03"/></geometry>
+    </collision>
+  </link>
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="laser_frame"/>
+    <origin xyz="$(arg lidar_x) 0 $(arg lidar_z)" rpy="0 0 $(arg lidar_yaw)"/>
+  </joint>
+
+</robot>

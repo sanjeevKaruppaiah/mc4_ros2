@@ -1,0 +1,15 @@
+# Patrol route for the default fake arena (map frame, metres / radians).
+# Flat list of x, y, yaw triples. Record your own by clicking "Publish Point"
+# in RViz and watching: ros2 topic echo /clicked_point
+waypoint_patrol:
+  ros__parameters:
+    waypoints: [
+      1.0,  0.0,  0.0,
+      2.3,  1.4,  1.57,
+      3.5,  1.5,  0.0,
+      3.4, -1.6, -1.57,
+      0.0, -0.4,  3.14
+    ]
+    loops: 2            # 0 = patrol forever
+    use_slam: true      # true when running navigation.launch.py slam:=true (no AMCL)
+    initial_pose: [0.0, 0.0, 0.0]   # used with AMCL only

@@ -1,0 +1,23 @@
+# Stable names for the MC 4.0: /dev/mc4_base (ESP32) and /dev/mc4_lidar (RPLIDAR A1).
+#
+#   bash scripts/list_serial.sh             # shows vendor/product/serial of each port
+#   sudo cp scripts/99-mc4.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload && sudo udevadm trigger
+#   ls -l /dev/mc4_*                         # both links must exist
+#
+# The RPLIDAR A1 USB adapter is a Silicon Labs CP2102 (10c4:ea60).
+# ESP32 DevKits ship with one of: CH340 (1a86:7523), CH9102 (1a86:55d4) or CP2102 (10c4:ea60).
+# Keep ONE of the cases below and delete the other.
+
+# ---- Case A: your ESP32 uses a CH340 or CH9102 (different chip from the lidar) ----
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="mc4_base", MODE="0666"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", SYMLINK+="mc4_base", MODE="0666"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="mc4_lidar", MODE="0666"
+
+# ---- Case B: your ESP32 ALSO uses a CP2102 -> tell them apart by serial number ----
+# Replace the serials with the values printed by scripts/list_serial.sh.
+# SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="ESP32_SERIAL_HERE", SYMLINK+="mc4_base", MODE="0666"
+# SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="LIDAR_SERIAL_HERE", SYMLINK+="mc4_lidar", MODE="0666"
+#
+# If both CP2102s report the same serial (cheap clones do), match the USB port instead:
+#   udevadm info -q path -n /dev/ttyUSB0      -> use KERNELS=="1-1.2:1.0" style matching

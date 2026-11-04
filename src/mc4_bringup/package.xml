@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mc4_bringup</name>
+  <version>0.1.0</version>
+  <description>Launch files and configs: MC 4.0 base + lidar + SLAM Toolbox + Nav2 + RViz.</description>
+  <maintainer email="matrixcodelab@gmail.com">Matrix Code Lab</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>mc4_description</exec_depend>
+  <exec_depend>mc4_base</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_amcl</exec_depend>
+  <exec_depend>nav2_controller</exec_depend>
+  <exec_depend>nav2_planner</exec_depend>
+  <exec_depend>nav2_behaviors</exec_depend>
+  <exec_depend>nav2_bt_navigator</exec_depend>
+  <exec_depend>nav2_waypoint_follower</exec_depend>
+  <exec_depend>nav2_velocity_smoother</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+  <exec_depend>nav2_navfn_planner</exec_depend>
+  <exec_depend>nav2_regulated_pure_pursuit_controller</exec_depend>
+  <exec_depend>nav2_rviz_plugins</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>rplidar_ros</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+  <!-- rf2o_laser_odometry, ldlidar_stl_ros2, ydlidar_ros2_driver are built from source: see deps.repos -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
